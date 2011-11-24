@@ -38,7 +38,7 @@ Usage
         systemc-2.2.0/
         tinyxml/
 
-   You can then do::
+  You can then do::
 
      cd examples/xsim/simple
      xcc hello.xc -o a.xe
