@@ -1,0 +1,36 @@
+EXECUTABLE ?= $(notdir $(abspath .))
+
+all: $(EXECUTABLE)
+
+REPO_NAME = tool_xcore_systemc
+
+FIND_XMOS_ROOT = $(if $(filter ../../../../..,$1),Cannot find XMOS_ROOT,$(if $(findstring $1/$(REPO_NAME),$(wildcard $1/*)),$1,$(call FIND_XMOS_ROOT,$1/..)))
+
+XMOS_ROOT ?= $(call FIND_XMOS_ROOT,..)
+
+ROOT = $(XMOS_ROOT)/$(REPO_NAME)
+
+
+SRC_DIRS = . $(ROOT)/src $(ROOT)/tinyxml
+
+XMOS_TOOL_PATH ?= $(subst /configs,,$(XCC_DEVICE_PATH))
+XMOS_XSI_INCLUDE_PATH ?= $(XMOS_TOOL_PATH)/include
+XMOS_XSI_LIB_PATH ?= $(XMOS_TOOL_PATH)/lib
+
+SRC_FILES = $(foreach dir,$(SRC_DIRS), $(wildcard $(dir)/*.cpp))
+HEADER_FILES = $(foreach dir,$(SRC_DIRS), $(wildcard $(dir)/*.hpp) $(wildcard $(dir)/*.h))
+
+
+SYSC_LIB_DIR = $(XMOS_ROOT)/$(REPO_NAME)/systemc-2.2.0/lib-linux64/
+SYSC_INC_DIR = $(XMOS_ROOT)/$(REPO_NAME)/systemc-2.2.0/include
+
+LIB_FLAGS = -L $(SYSC_LIB_DIR) -L $(XMOS_XSI_LIB_PATH)
+INC_FLAGS = -I $(SYSC_INC_DIR) $(foreach dir,$(SRC_DIRS), -I $(dir))
+INC_FLAGS += -I $(XMOS_XSI_INCLUDE_PATH)
+INC_FLAGS += -I $(ROOT)/include
+
+$(EXECUTABLE): $(SRC_FILES) $(HEADER_FILES)
+	g++ -g $(LIB_FLAGS) $(INC_FLAGS) $(SRC_FILES) -lxsidevice -lsystemc -o $(EXECUTABLE)
+
+clean:
+	-rm $(EXECUTABLE)
