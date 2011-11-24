@@ -5,7 +5,7 @@ SystemC/XCore integration repository
 
 :Status:  draft
 
-:Maintainer:  davelacey
+:Maintainer:  davelxmos
 
 :Description: This repository contains code for simulating and
   modelling an XMOS device within a SystemC modelling environment.
